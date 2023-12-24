@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:movie_app/core/home/models/res_movie.dart';
-import 'package:movie_app/core/home/repositories/movie_repository.dart';
+import 'package:movie_app/core/models/res_movie.dart';
+import 'package:movie_app/core/repositories/movie_repository.dart';
 import 'package:movie_app/utils/failure.dart';
 
 part 'discover_movie_state.dart';

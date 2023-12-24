@@ -1,4 +1,4 @@
-class ResDiscoverMovie {
+class ResMovie {
   bool? adult;
   String? backdropPath;
   List<int>? genreIds;
@@ -14,7 +14,7 @@ class ResDiscoverMovie {
   double? voteAverage;
   int? voteCount;
 
-  ResDiscoverMovie({
+  ResMovie({
     this.adult,
     this.backdropPath,
     this.genreIds,
@@ -31,8 +31,7 @@ class ResDiscoverMovie {
     this.voteCount,
   });
 
-  factory ResDiscoverMovie.fromJson(Map<String, dynamic> json) =>
-      ResDiscoverMovie(
+  factory ResMovie.fromJson(Map<String, dynamic> json) => ResMovie(
         adult: json["adult"],
         backdropPath: json["backdrop_path"],
         genreIds: json["genre_ids"] == null

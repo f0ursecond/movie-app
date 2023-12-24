@@ -13,7 +13,7 @@ final class DiscoverMovieLoading extends DiscoverMovieState {}
 
 final class DiscoverMovieSuccess extends DiscoverMovieState {
   DiscoverMovieSuccess({required this.result}) : super();
-  final List<ResDiscoverMovie> result;
+  final List<ResMovie> result;
 }
 
 final class DiscoverMovieFailure extends DiscoverMovieState {
