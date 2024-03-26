@@ -5,15 +5,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:movie_app/constant/color_constant.dart';
 import 'package:movie_app/constant/url_constant.dart';
-import 'package:movie_app/core/detail/screens/movie_detail_screen.dart';
-import 'package:movie_app/core/home/cubit/discover_movie/discover_movie_cubit.dart';
-import 'package:movie_app/core/home/cubit/trending_movie/trending_movie_cubit.dart';
+import 'package:movie_app/core/home/bloc/discover_movie/discover_movie_bloc.dart';
+import 'package:movie_app/core/home/bloc/trending_movie/trending_movie_bloc.dart';
+import 'package:movie_app/router/route_path.dart';
 
 class HomeScreen extends StatelessWidget {
   HomeScreen({super.key});
 
-  final discoverMovieCubit = DiscoverMovieCubit();
-  final trendingMovieCubit = TrendingMovieCubit();
+  final DiscoverMovieBloc discoverMovieBloc = DiscoverMovieBloc();
+  final TrendingMovieBloc trendingMovieBloc = TrendingMovieBloc();
 
   @override
   Widget build(BuildContext context) {
@@ -37,14 +37,17 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
             SizedBox(height: 15.h),
-            BlocBuilder<DiscoverMovieCubit, DiscoverMovieState>(
-              bloc: discoverMovieCubit..getMovieDiscover(),
+            BlocBuilder<DiscoverMovieBloc, DiscoverMovieState>(
+              bloc: discoverMovieBloc..add(GetMovieDiscover()),
               builder: (context, state) {
-                if (state is DiscoverMovieSuccess) {
+                if (state is DiscoverSuccess) {
                   return discoverMovieWidget(state);
-                } else if (state is DiscoverMovieFailure) {
+                } else if (state is DiscoverFailure) {
                   return Center(
-                    child: Text('${state.failure.message}\nCOK'),
+                    child: Text(
+                      state.failure.message,
+                      textAlign: TextAlign.center,
+                    ),
                   );
                 } else {
                   return const Center(
@@ -62,14 +65,14 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
             SizedBox(height: 10.h),
-            BlocBuilder<TrendingMovieCubit, TrendingMovieState>(
-              bloc: trendingMovieCubit..getTrendingMovie(),
+            BlocBuilder<TrendingMovieBloc, TrendingMovieState>(
+              bloc: trendingMovieBloc..add(GetTrendingMovie()),
               builder: (context, state) {
                 if (state is TrendingMovieSuccess) {
                   return trendingMovieWidget(state);
                 } else if (state is TrendingMovieFailure) {
                   return Center(
-                    child: Text('${state.failure.message}\nCOK'),
+                    child: Text(state.failure.message),
                   );
                 } else {
                   return const Center(
@@ -84,7 +87,7 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  SizedBox discoverMovieWidget(DiscoverMovieSuccess state) {
+  SizedBox discoverMovieWidget(DiscoverSuccess state) {
     return SizedBox(
       child: CarouselSlider.builder(
         itemCount: 5,
@@ -94,13 +97,10 @@ class HomeScreen extends StatelessWidget {
             borderRadius: BorderRadius.circular(10),
             child: InkWell(
               onTap: () {
-                Navigator.push(
+                Navigator.pushNamed(
                   context,
-                  MaterialPageRoute(
-                    builder: (context) => MovieDetailScreen(
-                      movieId: data.id.toString(),
-                    ),
-                  ),
+                  RoutePath.detailScreen,
+                  arguments: data.id.toString(),
                 );
               },
               child: CachedNetworkImage(
@@ -112,7 +112,6 @@ class HomeScreen extends StatelessWidget {
           );
         },
         options: CarouselOptions(
-          //enlargeCenterPage: true,
           aspectRatio: 9 / 7,
           autoPlay: true,
           viewportFraction: 0.60,
@@ -138,19 +137,15 @@ SizedBox trendingMovieWidget(TrendingMovieSuccess state) {
                   borderRadius: BorderRadius.circular(10),
                   child: InkWell(
                     onTap: () {
-                      Navigator.push(
+                      Navigator.pushNamed(
                         context,
-                        MaterialPageRoute(
-                          builder: (context) => MovieDetailScreen(
-                            movieId: data.id.toString(),
-                          ),
-                        ),
+                        RoutePath.detailScreen,
+                        arguments: data.id.toString(),
                       );
                     },
                     child: CachedNetworkImage(
                       fit: BoxFit.cover,
-                      errorWidget: (context, url, error) =>
-                          const Icon(Icons.error),
+                      errorWidget: (context, url, error) => const Icon(Icons.error),
                       imageUrl: '${UrlConstant.imageUrl}${data.posterPath}',
                     ),
                   ),

@@ -1,4 +1,4 @@
-part of 'trending_movie_cubit.dart';
+part of 'trending_movie_bloc.dart';
 
 sealed class TrendingMovieState extends Equatable {
   const TrendingMovieState();
@@ -12,11 +12,11 @@ final class TrendingMovieInitial extends TrendingMovieState {}
 final class TrendingMovieLoading extends TrendingMovieState {}
 
 final class TrendingMovieSuccess extends TrendingMovieState {
-  const TrendingMovieSuccess({required this.result}) : super();
+  TrendingMovieSuccess({required this.result}) : super();
   final List<ResMovie> result;
 }
 
 final class TrendingMovieFailure extends TrendingMovieState {
-  const TrendingMovieFailure({required this.failure}) : super();
+  TrendingMovieFailure({required this.failure}) : super();
   final Failure failure;
 }
