@@ -4,14 +4,14 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:movie_app/constant/color_constant.dart';
 import 'package:movie_app/core/navigation_screen.dart';
 
-class SplashScreen extends StatefulWidget {
-  const SplashScreen({super.key});
+class navigationScreen extends StatefulWidget {
+  const navigationScreen({super.key});
 
   @override
-  State<SplashScreen> createState() => _SplashScreenState();
+  State<navigationScreen> createState() => _navigationScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> {
+class _navigationScreenState extends State<navigationScreen> {
   @override
   void initState() {
     Future.delayed(Duration(seconds: 2), () {

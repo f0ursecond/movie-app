@@ -2,7 +2,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:movie_app/constant/color_constant.dart';
+import 'package:movie_app/core/featured/featured_screen.dart';
 import 'package:movie_app/core/home/screens/home_screen.dart';
+import 'package:movie_app/core/profile/profile_screen.dart';
 
 class NavigationScreen extends StatefulWidget {
   const NavigationScreen({super.key});
@@ -16,8 +18,8 @@ class _NavigationScreenState extends State<NavigationScreen> {
 
   List<Widget> screenList = [
     HomeScreen(),
-    Center(child: Text('Play')),
-    Center(child: Text('Profile')),
+    FeaturedScreen(),
+    ProfileScreen(),
   ];
 
   void onItemTapped(int index) {
@@ -31,6 +33,11 @@ class _NavigationScreenState extends State<NavigationScreen> {
     return Scaffold(
       body: screenList.elementAt(selectedIndex),
       bottomNavigationBar: BottomNavigationBar(
+        iconSize: 25,
+        showSelectedLabels: false,
+        showUnselectedLabels: false,
+        elevation: 0,
+        type: BottomNavigationBarType.fixed,
         backgroundColor: AppColors.kPrimaryColor,
         unselectedItemColor: Colors.grey.shade300,
         selectedItemColor: Colors.white,
@@ -38,10 +45,9 @@ class _NavigationScreenState extends State<NavigationScreen> {
         unselectedLabelStyle: TextStyle(color: Colors.grey.shade300),
         onTap: onItemTapped,
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.play_arrow_rounded), label: 'Watch'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: ''),
+          BottomNavigationBarItem(icon: Icon(Icons.play_circle), label: ''),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: ''),
         ],
       ),
     );

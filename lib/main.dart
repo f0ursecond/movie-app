@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:movie_app/constant/color_constant.dart';
 import 'package:movie_app/core/detail/bloc/add_favorite_bloc.dart';
 import 'package:movie_app/core/detail/cubit/movie_detail_cubit.dart';
+import 'package:movie_app/core/favorite/bloc/favorite_movie_bloc.dart';
 import 'package:movie_app/core/home/bloc/discover_movie/discover_movie_bloc.dart';
 import 'package:movie_app/core/home/bloc/trending_movie/trending_movie_bloc.dart';
 import 'package:movie_app/core/settings/bloc/anjay_bloc.dart';
@@ -43,6 +44,9 @@ class MyApp extends StatelessWidget {
         BlocProvider(
           create: (context) => AddFavoriteBloc(),
         ),
+        BlocProvider(
+          create: (context) => FavoriteMovieBloc(),
+        ),
       ],
       child: ScreenUtilInit(
         designSize: const Size(375, 712),
@@ -52,7 +56,7 @@ class MyApp extends StatelessWidget {
           debugShowCheckedModeBanner: false,
           title: 'Flutter Demo',
           onGenerateRoute: AppRouter.onGenerateRoute,
-          initialRoute: RoutePath.homeScreen,
+          initialRoute: RoutePath.navigationScreen,
           theme: ThemeData(
             visualDensity: VisualDensity.adaptivePlatformDensity,
             colorScheme: ColorScheme.fromSeed(

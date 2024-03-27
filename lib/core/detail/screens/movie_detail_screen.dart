@@ -12,7 +12,6 @@ import 'package:movie_app/core/detail/bloc/add_favorite_bloc.dart';
 import 'package:movie_app/core/detail/cubit/movie_detail_cubit.dart';
 import 'package:movie_app/core/models/res_movie_detail.dart';
 import 'package:movie_app/core/repositories/movie_repository.dart';
-import 'package:movie_app/utils/secure_storage.dart';
 
 class MovieDetailScreen extends StatefulWidget {
   const MovieDetailScreen({super.key, required this.movieId});
@@ -26,7 +25,6 @@ class MovieDetailScreen extends StatefulWidget {
 class _MovieDetailScreenState extends State<MovieDetailScreen> {
   final movieDetailCubit = MovieDetailCubit();
   late var addFavoriteBloc = AddFavoriteBloc();
-  final toogleFavCubit = ToogleFavoriteCubit();
   Future<bool?>? isFavoriteFuture;
 
   Future<bool?> checkIsFavoriteMovie() async {
@@ -65,15 +63,15 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.kPrimaryColor,
-      body: FutureBuilder<bool?>(
-        future: isFavoriteFuture,
-        builder: (context, snapshot) {
-          print('njir ${snapshot.data}');
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const CircularProgressIndicator();
-          } else {
-            return SafeArea(
-              child: SingleChildScrollView(
+      body: SafeArea(
+        child: FutureBuilder<bool?>(
+          future: isFavoriteFuture,
+          builder: (context, snapshot) {
+            print('njir ${snapshot.data}');
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const CircularProgressIndicator();
+            } else {
+              return SingleChildScrollView(
                 child: BlocBuilder<MovieDetailCubit, MovieDetailState>(
                   bloc: movieDetailCubit..getMovieDetail(widget.movieId),
                   builder: (context, state) {
@@ -115,50 +113,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                                       maxLines: 2,
                                     ),
                                     const Spacer(),
-                                    GestureDetector(
-                                      onTap: () {
-                                        if (snapshot.data == false || snapshot.data == null) {
-                                          addFavoriteBloc.add(AddFavoriteMovie(widget.movieId));
-                                        } else {
-                                          print('udah ditambah ke film favorit');
-                                        }
-                                      },
-                                      child: BlocConsumer<AddFavoriteBloc, AddFavoriteState>(
-                                        listener: (context, state) async {
-                                          if (state is AddFavoriteFailure) {
-                                            var snackbar = SnackBar(content: Text(state.failure.message));
-                                            ScaffoldMessenger.of(context).showSnackBar(snackbar);
-                                          } else if (state is AddFavoriteSuccess) {
-                                            var snackbar =
-                                                const SnackBar(content: Text('Film Favoritmu Berhasil Ditambahkan'));
-                                            ScaffoldMessenger.of(context).showSnackBar(snackbar);
-                                          }
-                                        },
-                                        builder: (context, state) {
-                                          print('statee $state');
-                                          if (state is AddFavoriteLoading) {
-                                            return const CircularProgressIndicator();
-                                          } else if (state is AddFavoriteSuccess) {
-                                            return const Icon(
-                                              Icons.favorite,
-                                              color: Color(0xFFF44336),
-                                              size: 45,
-                                            );
-                                          } else {
-                                            return snapshot.data == null
-                                                ? const Icon(
-                                                    Icons.favorite_border,
-                                                    size: 45,
-                                                  )
-                                                : const Icon(
-                                                    Icons.favorite,
-                                                    color: Color(0xFFF44336),
-                                                    size: 45,
-                                                  );
-                                          }
-                                        },
-                                      ),
-                                    )
+                                    favoriteWidget(snapshot)
                                   ],
                                 ),
                                 SizedBox(height: 6.h),
@@ -200,16 +155,60 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                         ],
                       );
                     } else if (state is MovieDetailFailure) {
-                      return Center(
-                        child: Text(state.failure.message),
-                      );
+                      return Center(child: Text(state.failure.message));
                     } else {
-                      return const Text('Loading');
+                      return const Center(child: Text('Loading'));
                     }
                   },
                 ),
-              ),
+              );
+            }
+          },
+        ),
+      ),
+    );
+  }
+
+  GestureDetector favoriteWidget(AsyncSnapshot<bool?> snapshot) {
+    return GestureDetector(
+      onTap: () {
+        if (snapshot.data == false || snapshot.data == null) {
+          addFavoriteBloc.add(AddFavoriteMovie(widget.movieId));
+        } else {
+          print('udah ditambah ke film favorit');
+        }
+      },
+      child: BlocConsumer<AddFavoriteBloc, AddFavoriteState>(
+        listener: (context, state) async {
+          if (state is AddFavoriteFailure) {
+            var snackbar = SnackBar(content: Text(state.failure.message));
+            ScaffoldMessenger.of(context).showSnackBar(snackbar);
+          } else if (state is AddFavoriteSuccess) {
+            var snackbar = const SnackBar(content: Text('Film Favoritmu Berhasil Ditambahkan'));
+            ScaffoldMessenger.of(context).showSnackBar(snackbar);
+          }
+        },
+        builder: (context, state) {
+          print('statee $state');
+          if (state is AddFavoriteLoading) {
+            return const CircularProgressIndicator();
+          } else if (state is AddFavoriteSuccess) {
+            return const Icon(
+              Icons.favorite,
+              color: Color(0xFFF44336),
+              size: 45,
             );
+          } else {
+            return snapshot.data == null
+                ? const Icon(
+                    Icons.favorite_border,
+                    size: 45,
+                  )
+                : const Icon(
+                    Icons.favorite,
+                    color: Color(0xFFF44336),
+                    size: 45,
+                  );
           }
         },
       ),
@@ -268,24 +267,4 @@ String formatedDate(String date) {
   DateTime stringToDateTime = DateTime.tryParse(date) ?? DateTime.now();
   final formatedDate = DateFormat('MMMM dd, yyyy').format(stringToDateTime);
   return formatedDate;
-}
-
-class ToogleFavoriteCubit extends Cubit<bool> {
-  ToogleFavoriteCubit() : super(false) {
-    _loadInitialValue();
-  }
-
-  Future<void> _loadInitialValue() async {
-    try {
-      var isFavorite = await SecureStorage.read("isFavorite") == "true" ? true : false;
-      emit(isFavorite);
-    } catch (e) {
-      print(e);
-    }
-  }
-
-  void toogle() async {
-    emit(!state);
-    await SecureStorage.write("isFavorite", state == true ? "true" : "false");
-  }
 }
